@@ -125,7 +125,29 @@ class IssueService extends \JiraRestApi\JiraClient
 
         return $comment;
     }
+    /**
+     * get comments of an issue.
+     *
+     * @param issueIdOrKey Issue id or key
+     * @param comment .
+     *
+     * @return array of Comment class
+     */    
+    public function getComments($issueIdOrKey) {
+        
+        $ret = $this->exec($this->uri."/$issueIdOrKey/comment?expand");
 
+        $this->log->addDebug('getComs result='.var_export($ret, true));
+
+        $data = json_encode(json_decode($ret)->comments);
+
+        $transitions = $this->json_mapper->mapArray(
+           json_decode($data), new \ArrayObject(), '\JiraRestApi\Issue\Comment'
+        );
+
+        return $transitions;
+
+    }
     /**
      * Get a list of the transitions possible for this issue by the current user, along with fields that are required and their types.
      *
